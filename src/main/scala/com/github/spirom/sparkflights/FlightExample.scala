@@ -2,9 +2,8 @@ package com.github.spirom.sparkflights
 
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{SQLContext, DataFrame}
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.sql.hive.HiveContext
 
 class FlightSample {}
 
@@ -128,7 +127,7 @@ object FlightSample {
   */
 
 
-  def runSqlQueries(outputLocation: String, hiveContext: HiveContext): Unit = {
+  def runSqlQueries(outputLocation: String, sqlContext: SQLContext): Unit = {
     //Top 10 airports with the most departures since 2000
     //val topDepartures = hiveContext.sql("SELECT origin, count(*) AS total_departures FROM flights WHERE year >= '2000' GROUP BY origin ORDER BY total_departures DESC LIMIT 10")
     //topDepartures.rdd.saveAsTextFile(s"$outputLocation/top_departures")
@@ -137,7 +136,7 @@ object FlightSample {
     //all.rdd.saveAsTextFile(s"$outputLocation/all_columns")
     //logger.info(all.schema.treeString)
 
-    val allCount = hiveContext.sql("SELECT count(*) as total_rows FROM flights")
+    val allCount = sqlContext.sql("SELECT count(*) as total_rows FROM flights")
     allCount.rdd.saveAsTextFile(s"$outputLocation/all_rows")
 
     //val years = hiveContext.sql("SELECT DISTINCT year FROM flights ORDER BY year")
@@ -195,11 +194,11 @@ object FlightSample {
     // sc is the SparkContext.
     val sc = new SparkContext(conf)
 
-    val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
+    val sqlContext = new SQLContext(sc)
 
     logger.info("SparkFlights: Reading Parquet data")
 
-    val all = hiveContext.parquetFile("s3://us-east-1.elasticmapreduce.samples/flightdata/input/")
+    val all = sqlContext.read.parquet("s3://us-east-1.elasticmapreduce.samples/flightdata/input/")
 
     coreQueries(all)
 
@@ -208,7 +207,7 @@ object FlightSample {
 
     logger.info("SparkFlights: Starting to run queries")
 
-    runSqlQueries(outputLocation, hiveContext)
+    runSqlQueries(outputLocation, sqlContext)
 
     logger.info("SparkFlights: All queries done")
   }
