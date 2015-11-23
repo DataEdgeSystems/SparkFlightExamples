@@ -4,9 +4,7 @@ import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{SaveMode, SQLContext, DataFrame}
 import org.apache.spark.{SparkConf, SparkContext}
-import java.io._
 
-class fFlightsMain {}
 
 object FlightsMain {
 
@@ -127,7 +125,6 @@ object FlightsMain {
 
   */
 
-  //val pw = new PrintWriter(new File("/tmp/flightlog.txt" ))
 
 
   def runSqlQueries(outputLocation: String, sqlContext: SQLContext): Unit = {
@@ -148,9 +145,7 @@ object FlightsMain {
       years.write.mode(SaveMode.Overwrite).save("s3://spirom-spark-output/flights/all_years")
     } catch {
       case e:Throwable => {
-        //pw.write("caught an exception\n")
-        //pw.write(e.getMessage + "\n")
-        //pw.write(e.getStackTraceString + "\n")
+
       }
 
     }
@@ -210,7 +205,6 @@ object FlightsMain {
 
     val sqlContext = new SQLContext(sc)
 
-    //pw.write("loading\n")
     logger.info("SparkFlights: Reading Parquet data")
 
     val all = sqlContext.read.parquet("s3://us-east-1.elasticmapreduce.samples/flightdata/input/")
@@ -221,12 +215,8 @@ object FlightsMain {
     all.registerTempTable("flights")
 
     logger.info("SparkFlights: Starting to run queries")
-    //pw.write("querying\n")
-
 
     runSqlQueries(outputLocation, sqlContext)
-
-    //pw.write("done\n")
 
     logger.info("SparkFlights: All queries done")
   }
