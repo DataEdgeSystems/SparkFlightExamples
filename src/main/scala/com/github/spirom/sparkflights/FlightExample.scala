@@ -1,129 +1,130 @@
 package com.github.spirom.sparkflights
 
+import com.github.spirom.sparkflights.config.OptionsConfig
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{SaveMode, SQLContext, DataFrame}
 import org.apache.spark.{SparkConf, SparkContext}
-
+import org.apache.spark.sql.types._
 
 object FlightsMain {
 
   val logger = Logger.getLogger(getClass.getName)
 
-  /*
+  val schema = StructType(
+    Seq(
+      StructField("year", IntegerType),
+      StructField("quarter", IntegerType),
+      StructField("month", IntegerType),
+      StructField("dayofmonth", IntegerType),
+      StructField("dayofweek", IntegerType),
+      StructField("flightdate", StringType),
+      StructField("uniquecarrier", StringType),
+      StructField("airlineid", IntegerType),
+      StructField("carrier", StringType),
+      StructField("tailnum", StringType),
+      StructField("flightnum", IntegerType),
+      StructField("originairportid", IntegerType),
+      StructField("originairportseqid", IntegerType),
+      StructField("origincitymarketid", IntegerType),
+      StructField("origin", StringType),
+      StructField("origincityname", StringType),
+      StructField("originstate", StringType),
+      StructField("originstatefips", IntegerType),
+      StructField("originstatename", StringType),
+      StructField("originwac", IntegerType),
+      StructField("destairportid", IntegerType),
+      StructField("destairportseqid", IntegerType),
+      StructField("destcitymarketid", IntegerType),
+      StructField("dest", StringType),
+      StructField("destcityname", StringType),
+      StructField("deststate", StringType),
+      StructField("deststatefips", IntegerType),
+      StructField("deststatename", StringType),
+      StructField("destwac", IntegerType),
+      StructField("crsdeptime", IntegerType),
+      StructField("deptime", IntegerType),
+      StructField("depdelay", IntegerType),
+      StructField("depdelayminutes", IntegerType),
+      StructField("depdel15", IntegerType),
+      StructField("departuredelaygroups", IntegerType),
+      StructField("deptimeblk", IntegerType),
+      StructField("taxiout", IntegerType),
+      StructField("wheelsoff", IntegerType),
+      StructField("wheelson", IntegerType),
+      StructField("taxiin", IntegerType),
+      StructField("crsarrtime", IntegerType),
+      StructField("arrtime", IntegerType),
+      StructField("arrdelay", IntegerType),
+      StructField("arrdelayminutes", IntegerType),
+      StructField("arrdel15", IntegerType),
+      StructField("arrivaldelaygroups", IntegerType),
+      StructField("arrtimeblk", StringType),
+      StructField("cancelled", IntegerType),
+      StructField("cancellationcode", IntegerType),
+      StructField("diverted", IntegerType),
+      StructField("crselapsedtime", IntegerType),
+      StructField("actualelapsedtime", IntegerType),
+      StructField("airtime", IntegerType),
+      StructField("flights", IntegerType),
+      StructField("distance", IntegerType),
+      StructField("distancegroup", IntegerType),
+      StructField("carrierdelay", IntegerType),
+      StructField("weatherdelay", IntegerType),
+      StructField("nasdelay", IntegerType),
+      StructField("securitydelay", IntegerType),
+      StructField("lateaircraftdelay", IntegerType),
+      StructField("firstdeptime", IntegerType),
+      StructField("totaladdgtime", IntegerType),
+      StructField("longestaddgtime", IntegerType),
+      StructField("divairportlandings", IntegerType),
+      StructField("divreacheddest", IntegerType),
+      StructField("divactualelapsedtime", IntegerType),
+      StructField("divarrdelay", IntegerType),
+      StructField("divdistance", IntegerType),
+      StructField("div1airport", IntegerType),
+      StructField("div1airportid", IntegerType),
+      StructField("div1airportseqid", IntegerType),
+      StructField("div1wheelson", IntegerType),
+      StructField("div1totalgtime", IntegerType),
+      StructField("div1longestgtime", IntegerType),
+      StructField("div1wheelsoff", IntegerType),
+      StructField("div1tailnum", IntegerType),
+      StructField("div2airport", IntegerType),
+      StructField("div2airportid", IntegerType),
+      StructField("div2airportseqid", IntegerType),
+      StructField("div2wheelson", IntegerType),
+      StructField("div2totalgtime", IntegerType),
+      StructField("div2longestgtime", IntegerType),
+      StructField("div2wheelsoff", IntegerType),
+      StructField("div2tailnum", IntegerType),
+      StructField("div3airport", IntegerType),
+      StructField("div3airportid", IntegerType),
+      StructField("div3airportseqid", IntegerType),
+      StructField("div3wheelson", IntegerType),
+      StructField("div3totalgtime", IntegerType),
+      StructField("div3longestgtime", IntegerType),
+      StructField("div3wheelsoff", IntegerType),
+      StructField("div3tailnum", IntegerType),
+      StructField("div4airport", IntegerType),
+      StructField("div4airportid", IntegerType),
+      StructField("div4airportseqid", IntegerType),
+      StructField("div4wheelson", IntegerType),
+      StructField("div4totalgtime", IntegerType),
+      StructField("div4longestgtime", IntegerType),
+      StructField("div4wheelsoff", IntegerType),
+      StructField("div4tailnum", IntegerType),
+      StructField("div5airport", IntegerType),
+      StructField("div5airportid", IntegerType),
+      StructField("div5airportseqid", IntegerType),
+      StructField("div5wheelson", IntegerType),
+      StructField("div5totalgtime", IntegerType),
+      StructField("div5longestgtime", IntegerType),
+      StructField("div5wheelsoff", IntegerType),
+      StructField("div5tailnum", IntegerType)
+    )
+  )
 
-  root
- |-- year: integer (nullable = true)
- |-- quarter: integer (nullable = true)
- |-- month: integer (nullable = true)
- |-- dayofmonth: integer (nullable = true)
- |-- dayofweek: integer (nullable = true)
- |-- flightdate: string (nullable = true)
- |-- uniquecarrier: string (nullable = true)
- |-- airlineid: integer (nullable = true)
- |-- carrier: string (nullable = true)
- |-- tailnum: string (nullable = true)
- |-- flightnum: integer (nullable = true)
- |-- originairportid: integer (nullable = true)
- |-- originairportseqid: integer (nullable = true)
- |-- origincitymarketid: integer (nullable = true)
- |-- origin: string (nullable = true)
- |-- origincityname: string (nullable = true)
- |-- originstate: string (nullable = true)
- |-- originstatefips: integer (nullable = true)
- |-- originstatename: string (nullable = true)
- |-- originwac: integer (nullable = true)
- |-- destairportid: integer (nullable = true)
- |-- destairportseqid: integer (nullable = true)
- |-- destcitymarketid: integer (nullable = true)
- |-- dest: string (nullable = true)
- |-- destcityname: string (nullable = true)
- |-- deststate: string (nullable = true)
- |-- deststatefips: integer (nullable = true)
- |-- deststatename: string (nullable = true)
- |-- destwac: integer (nullable = true)
- |-- crsdeptime: integer (nullable = true)
- |-- deptime: integer (nullable = true)
- |-- depdelay: integer (nullable = true)
- |-- depdelayminutes: integer (nullable = true)
- |-- depdel15: integer (nullable = true)
- |-- departuredelaygroups: integer (nullable = true)
- |-- deptimeblk: integer (nullable = true)
- |-- taxiout: integer (nullable = true)
- |-- wheelsoff: integer (nullable = true)
- |-- wheelson: integer (nullable = true)
- |-- taxiin: integer (nullable = true)
- |-- crsarrtime: integer (nullable = true)
- |-- arrtime: integer (nullable = true)
- |-- arrdelay: integer (nullable = true)
- |-- arrdelayminutes: integer (nullable = true)
- |-- arrdel15: integer (nullable = true)
- |-- arrivaldelaygroups: integer (nullable = true)
- |-- arrtimeblk: string (nullable = true)
- |-- cancelled: integer (nullable = true)
- |-- cancellationcode: integer (nullable = true)
- |-- diverted: integer (nullable = true)
- |-- crselapsedtime: integer (nullable = true)
- |-- actualelapsedtime: integer (nullable = true)
- |-- airtime: integer (nullable = true)
- |-- flights: integer (nullable = true)
- |-- distance: integer (nullable = true)
- |-- distancegroup: integer (nullable = true)
- |-- carrierdelay: integer (nullable = true)
- |-- weatherdelay: integer (nullable = true)
- |-- nasdelay: integer (nullable = true)
- |-- securitydelay: integer (nullable = true)
- |-- lateaircraftdelay: integer (nullable = true)
- |-- firstdeptime: integer (nullable = true)
- |-- totaladdgtime: integer (nullable = true)
- |-- longestaddgtime: integer (nullable = true)
- |-- divairportlandings: integer (nullable = true)
- |-- divreacheddest: integer (nullable = true)
- |-- divactualelapsedtime: integer (nullable = true)
- |-- divarrdelay: integer (nullable = true)
- |-- divdistance: integer (nullable = true)
- |-- div1airport: integer (nullable = true)
- |-- div1airportid: integer (nullable = true)
- |-- div1airportseqid: integer (nullable = true)
- |-- div1wheelson: integer (nullable = true)
- |-- div1totalgtime: integer (nullable = true)
- |-- div1longestgtime: integer (nullable = true)
- |-- div1wheelsoff: integer (nullable = true)
- |-- div1tailnum: integer (nullable = true)
- |-- div2airport: integer (nullable = true)
- |-- div2airportid: integer (nullable = true)
- |-- div2airportseqid: integer (nullable = true)
- |-- div2wheelson: integer (nullable = true)
- |-- div2totalgtime: integer (nullable = true)
- |-- div2longestgtime: integer (nullable = true)
- |-- div2wheelsoff: integer (nullable = true)
- |-- div2tailnum: integer (nullable = true)
- |-- div3airport: integer (nullable = true)
- |-- div3airportid: integer (nullable = true)
- |-- div3airportseqid: integer (nullable = true)
- |-- div3wheelson: integer (nullable = true)
- |-- div3totalgtime: integer (nullable = true)
- |-- div3longestgtime: integer (nullable = true)
- |-- div3wheelsoff: integer (nullable = true)
- |-- div3tailnum: integer (nullable = true)
- |-- div4airport: integer (nullable = true)
- |-- div4airportid: integer (nullable = true)
- |-- div4airportseqid: integer (nullable = true)
- |-- div4wheelson: integer (nullable = true)
- |-- div4totalgtime: integer (nullable = true)
- |-- div4longestgtime: integer (nullable = true)
- |-- div4wheelsoff: integer (nullable = true)
- |-- div4tailnum: integer (nullable = true)
- |-- div5airport: integer (nullable = true)
- |-- div5airportid: integer (nullable = true)
- |-- div5airportseqid: integer (nullable = true)
- |-- div5wheelson: integer (nullable = true)
- |-- div5totalgtime: integer (nullable = true)
- |-- div5longestgtime: integer (nullable = true)
- |-- div5wheelsoff: integer (nullable = true)
- |-- div5tailnum: integer (nullable = true)
-
-  */
 
 
 
@@ -139,24 +140,28 @@ object FlightsMain {
     //val allCount = sqlContext.sql("SELECT count(*) as total_rows FROM flights")
     //allCount.rdd.saveAsTextFile(s"$outputLocation/all_rows")
 
+
     try {
       val years = sqlContext.sql("SELECT DISTINCT year FROM flights ORDER BY year")
-      years.rdd.saveAsTextFile("s3://spirom-spark-output/flights/all_years_text")
-      years.write.mode(SaveMode.Overwrite).save("s3://spirom-spark-output/flights/all_years")
+      //years.rdd.saveAsTextFile(s"$outputLocation/flights/all_years_text")
+      years.write.mode(SaveMode.Overwrite).format("com.databricks.spark.csv").save(s"$outputLocation/all_years")
+      years.show()
     } catch {
-      case e:Throwable => {
-
+      case t:Throwable => {
+        logger.error("query went bad", t)
       }
 
     }
 
-    /*
+/*
     //Top 10 airports with the most departure delays over 15 minutes since 2000
-    val shortDepDelay = sqlContext.sql("SELECT origin, count(depDelay) as cnt FROM flights WHERE depDelay >= '15' AND year >= '2000' GROUP BY origin ORDER BY cnt DESC LIMIT 10")
+    val shortDepDelay = sqlContext.sql("SELECT origin, count(depdelay) as cnt FROM flights WHERE depdelay >= '15' AND year >= '2000' GROUP BY origin ORDER BY cnt DESC LIMIT 10")
     shortDepDelay.rdd.saveAsTextFile(s"$outputLocation/top_short_delays")
 
+    */
+/*
     //Top 10 airports with the most departure delays over 60 minutes since 2000
-    val longDepDelay = sqlContext.sql("SELECT origin, count(depDelay) AS total_delays FROM flights WHERE depDelay > '60' AND year >= '2000' GROUP BY origin ORDER BY total_delays DESC LIMIT 10")
+    val longDepDelay = sqlContext.sql("SELECT origin, count(depdelay) AS total_delays FROM flights WHERE depdelay > '60' AND year >= '2000' GROUP BY origin ORDER BY total_delays DESC LIMIT 10")
     longDepDelay.rdd.saveAsTextFile(s"$outputLocation/top_long_delays")
 
     //Top 10 airports with the most departure cancellations since 2000
@@ -170,11 +175,11 @@ object FlightsMain {
     //Top 10 most popular flight routes since 2000
     val popularFlights = sqlContext.sql("SELECT origin, dest, count(*) AS total_flights FROM flights WHERE year >= '2000' GROUP BY origin, dest ORDER BY total_flights DESC LIMIT 10")
     popularFlights.rdd.saveAsTextFile(s"$outputLocation/popular_flights")
-    */
+*/
   }
 
   def coreQueries(all: DataFrame): Unit = {
-    val tripples:RDD[(String, Int, Int)] = all.select("origin", "depDelay", "year").map(r =>
+    val tripples:RDD[(String, Int, Int)] = all.select("origin", "depdelay", "year").map(r =>
      (r.getString(0), r.getInt(1), r.getInt(2)))
     val originWithCount = tripples.filter(r => (r._2 > 15) && (r._3 > 2000)).groupBy(r => r._1).map(r => (r._1,r._2.size))
     val topTen = originWithCount.sortBy(p => p._2, false).take(10)
@@ -182,11 +187,6 @@ object FlightsMain {
 
   }
 
-  //
-  // Configuration:
-  //   local vs. cluster
-  //   parquet vs. CSV
-  //   which example to run
   //
   def main(args: Array[String]) {
 
@@ -196,28 +196,74 @@ object FlightsMain {
 
     logger.setLevel(Level.ALL)
 
-    val outputLocation = args(0)
+    val options = new OptionsConfig()
 
-    val conf = new SparkConf().setAppName("Flights Example")
+    options.parser.parse(args, options) match {
+      case Some(parsedOptions) => {
+        val conf = if (parsedOptions.local) {
+          logger.info("Local configuration")
+          new SparkConf().setAppName("Flights Example").setMaster("local[4]")
+        } else {
+          logger.info("running in a cluster")
+          new SparkConf().setAppName("Flights Example")
+        }
+        val sc = new SparkContext(conf)
+
+        val sqlContext = new SQLContext(sc)
+
+        val outputLocation = parsedOptions.out
+
+        logger.info(s"Setting output destination to $outputLocation")
+
+        val all = if (parsedOptions.csv.toString != ".") {
+          logger.info(s"SparkFlights: Reading CSV data from ${parsedOptions.csv.toString}")
+          val data = sqlContext.read
+            .format("com.databricks.spark.csv")
+            .option("header", "true") // Use first line of all files as header
+            .option("inferSchema", "false") // Automatically infer data types
+            .schema(schema)
+            .load(parsedOptions.csv.toString)
+          Some(data)
+        } else if (parsedOptions.parquet.toString != ".") {
+          logger.info(s"SparkFlights: Reading Parquet data from ${parsedOptions.parquet.toString}")
+          Some(sqlContext.read.parquet(parsedOptions.parquet.toString))
+          // "s3://us-east-1.elasticmapreduce.samples/flightdata/input/"
+        } else {
+          logger.fatal("no input specified")
+          None
+        }
+
+        all match {
+          case Some(data) =>
+              {
+                data.printSchema()
+
+                //coreQueries(all)
+
+                //Parquet files can also be registered as tables and then used in SQL statements.
+                data.registerTempTable("flights")
+
+                logger.info("SparkFlights: Starting to run queries")
+
+                runSqlQueries(outputLocation.getPath, sqlContext)
+
+                logger.info("SparkFlights: All queries done")
+              }
+          case None =>
+        }
+
+      }
+      // do stuff
+
+      case None =>
+      logger.fatal("Bad command line")
+    }
+
+
+
+
 
     // sc is the SparkContext.
-    val sc = new SparkContext(conf)
 
-    val sqlContext = new SQLContext(sc)
-
-    logger.info("SparkFlights: Reading Parquet data")
-
-    val all = sqlContext.read.parquet("s3://us-east-1.elasticmapreduce.samples/flightdata/input/")
-
-    //coreQueries(all)
-
-    //Parquet files can also be registered as tables and then used in SQL statements.
-    all.registerTempTable("flights")
-
-    logger.info("SparkFlights: Starting to run queries")
-
-    runSqlQueries(outputLocation, sqlContext)
-
-    logger.info("SparkFlights: All queries done")
   }
 }
