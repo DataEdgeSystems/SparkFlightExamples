@@ -7,7 +7,7 @@ import org.apache.spark.sql.{SaveMode, SQLContext, DataFrame}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.types._
 
-object FlightsMain {
+class Flights(args: Array[String]) {
 
   val logger = Logger.getLogger(getClass.getName)
 
@@ -125,9 +125,6 @@ object FlightsMain {
     )
   )
 
-
-
-
   def runSqlQueries(outputLocation: String, sqlContext: SQLContext): Unit = {
     //Top 10 airports with the most departures since 2000
     //val topDepartures = hiveContext.sql("SELECT origin, count(*) AS total_departures FROM flights WHERE year >= '2000' GROUP BY origin ORDER BY total_departures DESC LIMIT 10")
@@ -147,19 +144,19 @@ object FlightsMain {
       years.write.mode(SaveMode.Overwrite).format("com.databricks.spark.csv").save(s"$outputLocation/all_years")
       years.show()
     } catch {
-      case t:Throwable => {
+      case t: Throwable => {
         logger.error("query went bad", t)
       }
 
     }
 
-/*
+    /*
     //Top 10 airports with the most departure delays over 15 minutes since 2000
     val shortDepDelay = sqlContext.sql("SELECT origin, count(depdelay) as cnt FROM flights WHERE depdelay >= '15' AND year >= '2000' GROUP BY origin ORDER BY cnt DESC LIMIT 10")
     shortDepDelay.rdd.saveAsTextFile(s"$outputLocation/top_short_delays")
 
     */
-/*
+        /*
     //Top 10 airports with the most departure delays over 60 minutes since 2000
     val longDepDelay = sqlContext.sql("SELECT origin, count(depdelay) AS total_delays FROM flights WHERE depdelay > '60' AND year >= '2000' GROUP BY origin ORDER BY total_delays DESC LIMIT 10")
     longDepDelay.rdd.saveAsTextFile(s"$outputLocation/top_long_delays")
@@ -175,95 +172,96 @@ object FlightsMain {
     //Top 10 most popular flight routes since 2000
     val popularFlights = sqlContext.sql("SELECT origin, dest, count(*) AS total_flights FROM flights WHERE year >= '2000' GROUP BY origin, dest ORDER BY total_flights DESC LIMIT 10")
     popularFlights.rdd.saveAsTextFile(s"$outputLocation/popular_flights")
-*/
+    */
   }
 
   def coreQueries(all: DataFrame): Unit = {
-    val tripples:RDD[(String, Int, Int)] = all.select("origin", "depdelay", "year").map(r =>
-     (r.getString(0), r.getInt(1), r.getInt(2)))
-    val originWithCount = tripples.filter(r => (r._2 > 15) && (r._3 > 2000)).groupBy(r => r._1).map(r => (r._1,r._2.size))
+    val tripples: RDD[(String, Int, Int)] = all.select("origin", "depdelay", "year").map(r =>
+      (r.getString(0), r.getInt(1), r.getInt(2)))
+    val originWithCount = tripples.filter(r => (r._2 > 15) && (r._3 > 2000)).groupBy(r => r._1).map(r => (r._1, r._2.size))
     val topTen = originWithCount.sortBy(p => p._2, false).take(10)
 
 
   }
 
-  //
-  def main(args: Array[String]) {
+  //Setting the logging to ERROR
+  Logger.getLogger("org.apache.spark").setLevel(Level.ERROR)
+  Logger.getLogger("org.apache.spark.storage.BlockManager").setLevel(Level.ERROR)
 
-    //Setting the logging to ERROR
-    Logger.getLogger("org.apache.spark").setLevel(Level.ERROR)
-    Logger.getLogger("org.apache.spark.storage.BlockManager").setLevel(Level.ERROR)
+  logger.setLevel(Level.ALL)
 
-    logger.setLevel(Level.ALL)
+  val options = new OptionsConfig()
 
-    val options = new OptionsConfig()
+  options.parser.parse(args, options) match {
+    case Some(parsedOptions) => {
+      val conf = if (parsedOptions.local) {
+        logger.info("Local configuration")
+        new SparkConf().setAppName("Flights Example").setMaster("local[4]")
+      } else {
+        logger.info("running in a cluster")
+        new SparkConf().setAppName("Flights Example")
+      }
+      val sc = new SparkContext(conf)
 
-    options.parser.parse(args, options) match {
-      case Some(parsedOptions) => {
-        val conf = if (parsedOptions.local) {
-          logger.info("Local configuration")
-          new SparkConf().setAppName("Flights Example").setMaster("local[4]")
-        } else {
-          logger.info("running in a cluster")
-          new SparkConf().setAppName("Flights Example")
-        }
-        val sc = new SparkContext(conf)
+      val sqlContext = new SQLContext(sc)
 
-        val sqlContext = new SQLContext(sc)
+      val outputLocation = parsedOptions.out
 
-        val outputLocation = parsedOptions.out
+      logger.info(s"Setting output destination to $outputLocation")
 
-        logger.info(s"Setting output destination to $outputLocation")
-
-        val all = if (parsedOptions.csv.toString != ".") {
-          logger.info(s"SparkFlights: Reading CSV data from ${parsedOptions.csv.toString}")
-          val data = sqlContext.read
+      val all = if (parsedOptions.csv.toString != ".") {
+        logger.info(s"SparkFlights: Reading CSV data from ${parsedOptions.csv.toString}")
+        val data = sqlContext.read
             .format("com.databricks.spark.csv")
             .option("header", "true") // Use first line of all files as header
             .option("inferSchema", "false") // Automatically infer data types
             .schema(schema)
-            .load(parsedOptions.csv.toString)
-          Some(data)
-        } else if (parsedOptions.parquet.toString != ".") {
-          logger.info(s"SparkFlights: Reading Parquet data from ${parsedOptions.parquet.toString}")
-          Some(sqlContext.read.parquet(parsedOptions.parquet.toString))
-          // "s3://us-east-1.elasticmapreduce.samples/flightdata/input/"
-        } else {
-          logger.fatal("no input specified")
-          None
-        }
-
-        all match {
-          case Some(data) =>
-              {
-                data.printSchema()
-
-                //coreQueries(all)
-
-                //Parquet files can also be registered as tables and then used in SQL statements.
-                data.registerTempTable("flights")
-
-                logger.info("SparkFlights: Starting to run queries")
-
-                runSqlQueries(outputLocation.getPath, sqlContext)
-
-                logger.info("SparkFlights: All queries done")
-              }
-          case None =>
-        }
-
+          .load(parsedOptions.csv.toString)
+        Some(data)
+      } else if (parsedOptions.parquet.toString != ".") {
+        logger.info(s"SparkFlights: Reading Parquet data from ${parsedOptions.parquet.toString}")
+        Some(sqlContext.read.parquet(parsedOptions.parquet.toString))
+        // "s3://us-east-1.elasticmapreduce.samples/flightdata/input/"
+      } else {
+        logger.fatal("no input specified")
+        None
       }
-      // do stuff
 
-      case None =>
-      logger.fatal("Bad command line")
+      all match {
+        case Some(data) => {
+          data.printSchema()
+
+          //coreQueries(all)
+
+          //Parquet files can also be registered as tables and then used in SQL statements.
+          data.registerTempTable("flights")
+
+          logger.info("SparkFlights: Starting to run queries")
+
+          runSqlQueries(outputLocation.getPath, sqlContext)
+
+          logger.info("SparkFlights: All queries done")
+        }
+        case None =>
+      }
+
     }
+    // do stuff
+
+    case None =>
+      logger.fatal("Bad command line")
 
 
-
-
-
-    // sc is the SparkContext.
 
   }
+}
+
+  object FlightsMain {
+
+    //
+    def main(args: Array[String]) {
+      val f = new Flights(args)
+
+    }
+
 }
