@@ -5,6 +5,7 @@ import java.util.Calendar
 
 import org.apache.log4j.Logger
 import org.apache.spark.SparkContext
+import org.apache.spark.sql.DataFrame
 
 class Runner(experiments: Iterable[Experiment]) {
 
@@ -21,7 +22,7 @@ class Runner(experiments: Iterable[Experiment]) {
     id
   }
 
-  def run(outputBase: String) : Unit = {
+  def run(df: DataFrame, outputBase: String) : Unit = {
 
     val runOutputBase = outputBase + "/" + runId
 
@@ -29,7 +30,7 @@ class Runner(experiments: Iterable[Experiment]) {
 
     logger.info(s"Saving results under $runOutputBase")
 
-    experiments.foreach(e => e.run(runOutputBase, results))
+    experiments.foreach(e => e.run(df, runOutputBase, results))
 
     logger.info(s"Completed all experiments for run $runId")
 

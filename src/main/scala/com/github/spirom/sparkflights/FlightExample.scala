@@ -1,7 +1,7 @@
 package com.github.spirom.sparkflights
 
 import com.github.spirom.sparkflights.config.OptionsConfig
-import com.github.spirom.sparkflights.experiments.YearsCoveredSQL
+import com.github.spirom.sparkflights.experiments.{YearsCoveredCore, YearsCoveredSQL}
 import com.github.spirom.sparkflights.fw.{Registry, Runner}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
@@ -244,10 +244,12 @@ class Flights(args: Array[String]) {
 
           val registry = new Registry()
 
+          // TODO: currently runs in random order
           registry.add(new YearsCoveredSQL(sqlContext))
+          registry.add(new YearsCoveredCore(sc))
 
           val runner = new Runner(registry.getAll())
-          runner.run(outputLocation.getPath)
+          runner.run(data, outputLocation.getPath)
 
           logger.info("SparkFlights: All queries done")
 

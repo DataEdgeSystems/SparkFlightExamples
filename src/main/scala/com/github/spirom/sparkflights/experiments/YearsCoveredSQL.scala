@@ -4,7 +4,7 @@ import com.github.spirom.sparkflights.fw.SQLExperiment
 import org.apache.spark.sql.SQLContext
 
 class YearsCoveredSQL(sqlContext: SQLContext)
-  extends SQLExperiment("YearsCovered", sqlContext) {
+  extends SQLExperiment("YearsCoveredSQL", sqlContext) {
 
   def runUserCode(sqlContext: SQLContext, outputBase: String): Unit = {
     val years = sqlContext.sql("SELECT DISTINCT year FROM flights ORDER BY year")
