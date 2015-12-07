@@ -13,7 +13,7 @@ abstract class Experiment(val name: String) {
 
   def run(runOutputBase: String, results: Results): Unit = {
 
-    val timeFormat = new SimpleDateFormat("YYYY_MM_DD_hhmmss")
+    val timeFormat = new SimpleDateFormat("hh:mm:ss")
 
     val before = Calendar.getInstance().getTime()
     logger.info(s"Running $name at ${timeFormat.format(before)}")

@@ -251,7 +251,7 @@ class Flights(args: Array[String]) {
 
           logger.info("SparkFlights: All queries done")
 
-          // TODO: now save the results somewhere
+          runner.saveSummary(outputLocation.getPath, sc)
         }
         case None =>
       }
