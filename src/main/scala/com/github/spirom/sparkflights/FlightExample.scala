@@ -1,6 +1,8 @@
 package com.github.spirom.sparkflights
 
 import com.github.spirom.sparkflights.config.OptionsConfig
+import com.github.spirom.sparkflights.experiments.YearsCoveredSQL
+import com.github.spirom.sparkflights.fw.{Registry, Runner}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{SaveMode, SQLContext, DataFrame}
@@ -238,15 +240,23 @@ class Flights(args: Array[String]) {
 
           logger.info("SparkFlights: Starting to run queries")
 
-          runSqlQueries(outputLocation.getPath, sqlContext)
+          //runSqlQueries(outputLocation.getPath, sqlContext)
+
+          val registry = new Registry()
+
+          registry.add(new YearsCoveredSQL(sqlContext))
+
+          val runner = new Runner(registry.getAll())
+          runner.run(outputLocation.getPath)
 
           logger.info("SparkFlights: All queries done")
+
+          // TODO: now save the results somewhere
         }
         case None =>
       }
 
     }
-    // do stuff
 
     case None =>
       logger.fatal("Bad command line")
