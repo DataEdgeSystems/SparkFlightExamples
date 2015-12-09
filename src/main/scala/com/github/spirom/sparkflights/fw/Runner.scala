@@ -17,7 +17,7 @@ class Runner(experiments: Iterable[Experiment]) {
 
   def makeIdFromDateTime(): String = {
     val now = Calendar.getInstance().getTime()
-    val idFormat = new SimpleDateFormat("YYYY_MM_DD_hhmmss")
+    val idFormat = new SimpleDateFormat("YYYY_MM_dd_hhmmss")
     val id = idFormat.format(now)
     id
   }
