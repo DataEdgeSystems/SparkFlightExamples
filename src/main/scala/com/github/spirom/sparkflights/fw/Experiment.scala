@@ -26,7 +26,7 @@ abstract class Experiment(val name: String) {
 
       val diff = after.getTime - before.getTime
 
-      val result = new ExperimentResult(this, before, after, None)
+      val result = new ExperimentResult(this, before, after, diff, None)
       results.add(result)
 
       logger.info(s"Completed $name at ${timeFormat.format(after)} after $diff seconds")
@@ -36,7 +36,7 @@ abstract class Experiment(val name: String) {
 
         val diff = after.getTime - before.getTime
 
-        val result = new ExperimentResult(this, before, after, Some(t))
+        val result = new ExperimentResult(this, before, after, diff, Some(t))
         results.add(result)
 
         logger.warn(s"Failed $name at ${timeFormat.format(after)} after $diff seconds", t)

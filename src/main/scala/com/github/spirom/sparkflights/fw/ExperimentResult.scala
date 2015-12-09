@@ -7,6 +7,7 @@ class ExperimentResult(
                         val experiment: Experiment,
                         val start: Date,
                         val finish: Date,
+                        val elapsed: Long,
                         val throwable: Option[Throwable]
                         ) {
 

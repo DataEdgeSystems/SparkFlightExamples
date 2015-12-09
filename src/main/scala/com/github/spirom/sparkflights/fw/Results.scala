@@ -14,13 +14,14 @@ class Results {
 
   def all = results.iterator
 
-  private def asLoggableRDD(sc: SparkContext): RDD[(Boolean, String, String, String, String)] = {
+  private def asLoggableRDD(sc: SparkContext): RDD[(Boolean, String, String, String, Long, String)] = {
     val raw = results.map(er => {
       (
         er.throwable.isEmpty,
         er.experiment.name,
         er.startString,
         er.finishString,
+        er.elapsed,
         er.throwable match {
           case Some(t) => t.getMessage()
           case None => ""
