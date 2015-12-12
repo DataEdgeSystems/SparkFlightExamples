@@ -170,7 +170,11 @@ TotalGTime","Div5LongestGTime","Div5WheelsOff","Div5TailNum",
       StructField("div5totalgtime", DoubleType),
       StructField("div5longestgtime", DoubleType),
       StructField("div5wheelsoff", StringType),
-      StructField("div5tailnum", StringType)
+      StructField("div5tailnum", StringType),
+
+      // the CSV files have a trailing comma on each line
+      StructField("atend", StringType)
+
     )
   )
 

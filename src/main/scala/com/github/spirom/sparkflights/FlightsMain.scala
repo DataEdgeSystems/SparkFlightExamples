@@ -77,7 +77,7 @@ class Flights(args: Array[String]) {
           registry.add(new TopQuartersByCancellationsSQL(sqlContext))
           registry.add(new MostPopularRoutesSQL(sqlContext))
 
-
+          // TODO: the first elapsed time probably includes loading the data
           val runner = new Runner(registry.getAll())
           runner.run(data, outputLocation.getPath)
 
