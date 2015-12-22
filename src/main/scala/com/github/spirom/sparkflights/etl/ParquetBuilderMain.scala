@@ -42,7 +42,7 @@ object ParquetBuilderMain {
         data.show(1)
 
         data.printSchema()
-        //data.write.parquet("/mnt/data2/FlightDataParquet/flights")
+        data.write.mode("append").parquet("/mnt/data2/FlightDataParquet/flights")
       }
 
 
