@@ -76,6 +76,7 @@ class Flights(args: Array[String]) {
           registry.add(new TopAirportsByLongDelaysSQL(sqlContext))
           registry.add(new TopAirportsByLongDelaysCore(sc))
           registry.add(new TopAirportsByLongDelaysPercentCore(sc))
+          registry.add(new TopAirportsByAnnualDeparturesCore(sc))
           registry.add(new TopQuartersByCancellationsSQL(sqlContext))
           registry.add(new MostPopularRoutesSQL(sqlContext))
 
