@@ -6,7 +6,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 
 object TopAirportsByLongDelays {
-  def add(count: Int, data:(Double, Int)): Int = {
+  def add(count: Int, data:(Int, Int)): Int = {
     data match
     {
       case (delay, year) => if (year > 2000 && delay > 60) count + 1 else count
@@ -22,9 +22,9 @@ class TopAirportsByLongDelaysCore(sc: SparkContext)
   extends CoreExperiment("TopAirportsByLongDelaysCore", sc) {
 
   def runUserCode(sc: SparkContext, df: DataFrame, outputBase: String): Unit = {
-    val delays: RDD[(String, (Double, Int))] =
+    val delays: RDD[(String, (Int, Int))] =
       df.select("origin", "depdelay", "year").map(r =>
-      (r.getString(0), (r.getDouble(1), r.getInt(2))))
+      (r.getString(0), (r.getInt(1), r.getInt(2))))
     val originsWithCount =
       delays.aggregateByKey(0)(TopAirportsByLongDelays.add, TopAirportsByLongDelays.combine)
     val sortedByCount =

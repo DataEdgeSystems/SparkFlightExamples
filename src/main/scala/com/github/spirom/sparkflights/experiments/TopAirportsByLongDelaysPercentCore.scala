@@ -11,7 +11,7 @@ object TopAirportsByLongDelaysPercent {
     def percent = if (total > 0) 100.0 * delayed / total else 0.0
   }
 
-  def add(acc: Accumulator, data:(Double, Int)): Accumulator = {
+  def add(acc: Accumulator, data:(Int, Int)): Accumulator = {
     val delayed = data match
     {
       case (delay, year) =>
@@ -30,9 +30,9 @@ class TopAirportsByLongDelaysPercentCore(sc: SparkContext)
   extends CoreExperiment("TopAirportsByLongDelaysPercentCore", sc) {
 
   def runUserCode(sc: SparkContext, df: DataFrame, outputBase: String): Unit = {
-    val delays: RDD[(String, (Double, Int))] =
+    val delays: RDD[(String, (Int, Int))] =
       df.select("origin", "depdelay", "year").map(r =>
-      (r.getString(0), (r.getDouble(1), r.getInt(2))))
+      (r.getString(0), (r.getInt(1), r.getInt(2))))
     val yearsWithCounts =
       delays.aggregateByKey(TopAirportsByLongDelaysPercent.Accumulator(0,0))(
         TopAirportsByLongDelaysPercent.add,
