@@ -9,7 +9,10 @@ class MostPopularRoutesSQL(sqlContext: SQLContext)
 
   def runUserCode(sqlContext: SQLContext, outputBase: String): Unit = {
 
-    //Top 10 most popular flight routes since 2000
+    //
+    // The 10 most popular origin/destination airport pairs
+    // (by absolute number of scheduled flights) since 2000
+    //
 
     val popularFlights = sqlContext.sql(
       s"""

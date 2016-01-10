@@ -9,7 +9,10 @@ class TopQuartersByCancellationsSQL(sqlContext: SQLContext)
 
   def runUserCode(sqlContext: SQLContext, outputBase: String): Unit = {
 
-    //Worst quarters for departure cancellations
+    //
+    // Worst quarters for absolute number of departure cancellations
+    // across all airports
+    //
 
     val quarterCancel = sqlContext.sql(
       s"""

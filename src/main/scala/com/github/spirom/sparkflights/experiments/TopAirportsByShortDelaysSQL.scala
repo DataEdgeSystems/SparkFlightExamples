@@ -9,7 +9,11 @@ class TopAirportsByShortDelaysSQL(sqlContext: SQLContext)
 
   def runUserCode(sqlContext: SQLContext, outputBase: String): Unit = {
 
-    //Top 10 airports with the most departure delays over 15 minutes since 2000
+    //
+    // The 10 airports with the highest absolute number of
+    // scheduled flights experiencing a departure delay over 15 minutes
+    // since 2000
+    //
 
     val shortDepDelay = sqlContext.sql(
       s"""

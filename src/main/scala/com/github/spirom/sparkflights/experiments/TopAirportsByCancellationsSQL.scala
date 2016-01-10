@@ -9,7 +9,10 @@ class TopAirportsByCancellationsSQL(sqlContext: SQLContext)
 
   def runUserCode(sqlContext: SQLContext, outputBase: String): Unit = {
 
-    //Top 10 airports with the most departure cancellations since 2000
+    //
+    // The 10 origin airports with the highest absolute number
+    // of departure cancellations since 2000
+    //
 
     val popularFlights = sqlContext.sql(
       s"""
