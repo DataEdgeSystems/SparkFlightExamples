@@ -7,7 +7,7 @@ class RDDLogger(root: String, sc: SparkContext) {
 
   var count = 0
 
-  val enabled = false
+  var enabled = false
 
   def log(msg: String) : Unit = {
     if (enabled) {
