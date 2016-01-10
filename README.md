@@ -39,6 +39,12 @@ The code uses that instance of the data.
 The data spans from 1987 to 2015. There are 162,212,419 rows.
 It appears to contain all the columns in the official data set.
 
+# Building and running
+
+## Building
+
+## Command line
+
 # The core Spark queries
 
 ## Annotated list of queries
