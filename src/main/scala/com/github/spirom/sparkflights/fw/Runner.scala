@@ -7,7 +7,8 @@ import org.apache.log4j.Logger
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.DataFrame
 
-class Runner(experiments: Iterable[Experiment]) {
+class Runner(experiments: Iterable[Experiment], sc: SparkContext,
+              rddLogger: RDDLogger) {
 
   val logger = Logger.getLogger(getClass.getName)
 
@@ -30,7 +31,10 @@ class Runner(experiments: Iterable[Experiment]) {
 
     logger.info(s"Saving results under $runOutputBase")
 
-    experiments.foreach(e => e.run(df, runOutputBase, results))
+    experiments.foreach(e => {
+      rddLogger.log("before " + e.name)
+      e.run(df, runOutputBase, results)
+    })
 
     logger.info(s"Completed all experiments for run $runId")
 

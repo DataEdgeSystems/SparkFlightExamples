@@ -2,7 +2,7 @@ package com.github.spirom.sparkflights
 
 import com.github.spirom.sparkflights.config.OptionsConfig
 import com.github.spirom.sparkflights.experiments._
-import com.github.spirom.sparkflights.fw.{Registry, Runner}
+import com.github.spirom.sparkflights.fw.{RDDLogger, Registry, Runner}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{SaveMode, SQLContext, DataFrame}
@@ -40,6 +40,8 @@ class Flights(args: Array[String]) {
 
       val outputLocation = parsedOptions.out
 
+      val rddLogger = new RDDLogger(outputLocation.toString, sc)
+
       logger.info(s"Setting output destination to $outputLocation")
 
       val all =
@@ -57,7 +59,10 @@ class Flights(args: Array[String]) {
           Some(data)
         } else if (parsedOptions.parquet.toString != ".") {
           logger.info(s"SparkFlights: Reading Parquet data from ${parsedOptions.parquet.toString}")
-          Some(sqlContext.read.parquet(parsedOptions.parquet.toString))
+          rddLogger.log("before " + parsedOptions.parquet.toString)
+          val recs = sqlContext.read.parquet(parsedOptions.parquet.toString)
+          rddLogger.log("after " + parsedOptions.parquet.toString)
+          Some(recs)
           // "s3://us-east-1.elasticmapreduce.samples/flightdata/input/"
         } else {
           logger.fatal("no input specified")
@@ -89,12 +94,12 @@ class Flights(args: Array[String]) {
           registry.add(new MostPopularRoutesSQL(sqlContext))
 
           // TODO: the first elapsed time probably includes loading the data
-          val runner = new Runner(registry.getAll())
-          runner.run(data, outputLocation.getPath)
+          val runner = new Runner(registry.getAll(), sc, rddLogger)
+          runner.run(data, outputLocation.toString)
 
           logger.info("SparkFlights: All queries done")
 
-          runner.saveSummary(outputLocation.getPath, sc)
+          runner.saveSummary(outputLocation.toString, sc)
         }
         case None =>
       }

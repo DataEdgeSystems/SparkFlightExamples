@@ -28,7 +28,7 @@ class Results {
         }
         )
     })
-    sc.parallelize(raw, 4)
+    sc.parallelize(raw, 1)
   }
 
   def save(runOutputBase: String, sc: SparkContext) : Unit = {
