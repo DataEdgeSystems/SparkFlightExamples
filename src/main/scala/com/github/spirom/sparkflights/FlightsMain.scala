@@ -21,6 +21,10 @@ class Flights(args: Array[String]) {
 
   val options = new OptionsConfig()
 
+  def sanity(sc: SparkContext, output: String) : Unit = {
+    sc.parallelize(Seq("Hello, world!"), 1).saveAsTextFile(output)
+  }
+
   options.parser.parse(args, options) match {
     case Some(parsedOptions) => {
       val conf = if (parsedOptions.local) {
@@ -38,23 +42,27 @@ class Flights(args: Array[String]) {
 
       logger.info(s"Setting output destination to $outputLocation")
 
-      val all = if (parsedOptions.csv.toString != ".") {
-        logger.info(s"SparkFlights: Reading CSV data from ${parsedOptions.csv.toString}")
-        val data = sqlContext.read
-            .format("com.databricks.spark.csv")
-            .option("header", "true") // Use first line of all files as header
-            .option("inferSchema", "false") // Automatically infer data types
-            .schema(FlightsDataSchema.schema)
-          .load(parsedOptions.csv.toString)
-        Some(data)
-      } else if (parsedOptions.parquet.toString != ".") {
-        logger.info(s"SparkFlights: Reading Parquet data from ${parsedOptions.parquet.toString}")
-        Some(sqlContext.read.parquet(parsedOptions.parquet.toString))
-        // "s3://us-east-1.elasticmapreduce.samples/flightdata/input/"
-      } else {
-        logger.fatal("no input specified")
-        None
-      }
+      val all =
+        if (parsedOptions.sanity.toString != ".") {
+          sanity(sc, parsedOptions.sanity.toString)
+          None
+        } else if (parsedOptions.csv.toString != ".") {
+          logger.info(s"SparkFlights: Reading CSV data from ${parsedOptions.csv.toString}")
+          val data = sqlContext.read
+              .format("com.databricks.spark.csv")
+              .option("header", "true") // Use first line of all files as header
+              .option("inferSchema", "false") // Automatically infer data types
+              .schema(FlightsDataSchema.schema)
+            .load(parsedOptions.csv.toString)
+          Some(data)
+        } else if (parsedOptions.parquet.toString != ".") {
+          logger.info(s"SparkFlights: Reading Parquet data from ${parsedOptions.parquet.toString}")
+          Some(sqlContext.read.parquet(parsedOptions.parquet.toString))
+          // "s3://us-east-1.elasticmapreduce.samples/flightdata/input/"
+        } else {
+          logger.fatal("no input specified")
+          None
+        }
 
       all match {
         case Some(data) => {
