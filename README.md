@@ -64,7 +64,7 @@ Transportation Statistics.
 
 ### FlightsMain
 
-    FlightExample [options]
+    java FlightsMain [options]
 
       --sanity <URI>
             Sanity check: just output an RDD to this URI and exit
@@ -77,11 +77,20 @@ Transportation Statistics.
       --parquet <URI>
             URI of Parquet input
 
-# The core Spark queries
+# The Core Spark Queries
 
-## Annotated list of queries
+## Annotated List of Queries
 
-## Programming approach
+|| Query || Purpose ||
+| YearsCoveredCore | Very simply, determine which years the data
+covers -- every year produced is guaranteed to have at least one flight record int he data |
+| TopAirportsByAnnualDeparturesCore | Which airports have the most departures -- using the average yearly count.  |
+| TopAirportsByLongDelaysCore | Which airports have the highest
+absolute number of delays over an hour. |
+| TopAirportsByLongDelaysPercentCore | Which airports have the highest percentage of
+flights delayed mroe than an hour -- this is the less naive version as it adjusts for how busy the airport is. |
+
+## Programming Approach
 
 ## Performance
 
