@@ -81,7 +81,8 @@ Transportation Statistics.
 
 ## Annotated List of Queries
 
-|| Query || Purpose ||
+| Query | Purpose |
+| ----- | ------- |
 | YearsCoveredCore | Very simply, determine which years the data
 covers -- every year produced is guaranteed to have at least one flight record int he data |
 | TopAirportsByAnnualDeparturesCore | Which airports have the most departures -- using the average yearly count.  |
