@@ -83,10 +83,10 @@ Transportation Statistics.
 
 | Query | Purpose |
 | ----- | ------- |
-| YearsCoveredCore | Very simply, determine which years the data covers -- every year produced is guaranteed to have at least one flight record int he data |
-| TopAirportsByAnnualDeparturesCore | Which airports have the most departures -- using the average yearly count.  |
-| TopAirportsByLongDelaysCore | Which airports have the highest absolute number of delays over an hour. |
-| TopAirportsByLongDelaysPercentCore | Which airports have the highest percentage of flights delayed mroe than an hour -- this is the less naive version as it adjusts for how busy the airport is. |
+| [YearsCoveredCore](src/main/scala/com/github/spirom/sparkflights/YearsCoveredCore.scala) | Very simply, determine which years the data covers -- every year produced is guaranteed to have at least one flight record int he data |
+| [TopAirportsByAnnualDeparturesCore](src/main/scala/com/github/spirom/sparkflights/TopAirportsByAnnualDeparturesCore.scala) | Which airports have the most departures -- using the average yearly count.  |
+| [TopAirportsByLongDelaysCore](src/main/scala/com/github/spirom/sparkflights/TopAirportsByLongDelaysCore.scala) | Which airports have the highest absolute number of delays over an hour. |
+| [TopAirportsByLongDelaysPercentCore](src/main/scala/com/github/spirom/sparkflights/TopAirportsByLongDelaysPercentCore.scala) | Which airports have the highest percentage of flights delayed mroe than an hour -- this is the less naive version as it adjusts for how busy the airport is. |
 
 ## Programming Approach
 
