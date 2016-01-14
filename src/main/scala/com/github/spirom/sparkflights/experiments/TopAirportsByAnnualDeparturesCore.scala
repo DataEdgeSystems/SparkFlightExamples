@@ -1,6 +1,7 @@
 package com.github.spirom.sparkflights.experiments
 
 import com.github.spirom.sparkflights.fw.CoreExperiment
+import com.github.spirom.sparkflights.util.MapAccumulator
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
@@ -9,28 +10,23 @@ import scala.collection.mutable
 
 object TopAirportsByAnnualDepartures {
 
-  case class Accumulator() {
-    val byYear = new mutable.HashMap[Int, Int]()
+  class Accumulator() extends MapAccumulator[Int, Int] {
 
     def increment(year: Int): Unit = {
       add(year, 1)
     }
 
     def add(year: Int, count: Int): Unit = {
-      byYear.get(year) match {
-        case Some(oldCount) => byYear.+=((year, oldCount + count))
-        case None => byYear.+=((year, count))
+      entries.get(year) match {
+        case Some(oldCount) => entries.+=((year, oldCount + count))
+        case None => entries.+=((year, count))
       }
     }
 
-    def merge(other: Accumulator): Unit = {
-      for ((year, count) <- other.byYear.iterator) {
-        add(year, count)
-      }
-    }
+    override def mergeValues(v1: Int, v2: Int) : Int = v1 + v2
 
     def average(): Int = {
-      val v = byYear.values.seq
+      val v = entries.values.seq
       if (v.isEmpty)
         0
       else
@@ -47,7 +43,7 @@ object TopAirportsByAnnualDepartures {
   }
 
   def combine(acc1: Accumulator, acc2: Accumulator): Accumulator = {
-    val acc = Accumulator()
+    val acc = new Accumulator()
     acc.merge(acc1)
     acc.merge(acc2)
     acc
@@ -65,7 +61,7 @@ class TopAirportsByAnnualDeparturesCore(sc: SparkContext)
       (r.getString(0), r.getInt(1)))
 
     val byOriginKey =
-      departures.aggregateByKey(TopAirportsByAnnualDepartures.Accumulator())(
+      departures.aggregateByKey(new TopAirportsByAnnualDepartures.Accumulator())(
         TopAirportsByAnnualDepartures.add,
         TopAirportsByAnnualDepartures.combine)
     val originsWithAverage = byOriginKey.map(
