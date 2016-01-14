@@ -13,8 +13,8 @@ case class OptionsConfig
   run:Seq[String] = Seq()
   ) {
 
-  val parser = new scopt.OptionParser[OptionsConfig]("FlightExample") {
-    head("FlightExample", "1.5")
+  val parser = new scopt.OptionParser[OptionsConfig]("FlightsMain") {
+    head("FlightsMain", "1.5")
 
     opt[URI]("sanity") optional() valueName("<URI>") action { (x, c) =>
       c.copy(sanity = x) } text("Sanity check: just output an RDD to this URI and exit")
