@@ -24,7 +24,8 @@ with a simple command line interface. The project goals are:
 
 ## Official site
 
-These examples analyze the data published by the US Government as
+These examples analyze the data published by the US Government (specifically,
+the Bureau of Transport Statistics in the Department of Transportation) as
 [Airline On-Time Performance and Causes of Flight Delays: On_Time Data]
 (https://catalog.data.gov/dataset/airline-on-time-performance-and-causes-of-flight-delays).
 
@@ -43,7 +44,38 @@ It appears to contain all the columns in the official data set.
 
 ## Building
 
-## Command line
+## Command line(s)
+
+### ParquetSubsetMain
+
+This is for creating smaller Parquet extracts from the full data set.
+One application is to create a data set that is small enough to download
+to a PC or laptop.
+
+    java ParquetSubsetMain <sourceParquetUrl> <destinationParquetUrl>
+
+### ParquetBuilderMain
+
+Note: this is not ready for use.
+
+This is intended for creating your own Parquet data sets from the CSV form of
+the on-time performance data as provided by the Bureau of
+Transportation Statistics.
+
+### FlightsMain
+
+    FlightExample [options]
+
+      --sanity <URI>
+            Sanity check: just output an RDD to this URI and exit
+      --local
+            Local, embedded Spark for testing
+      -o <URI> | --out <URI>
+            required URI of output destination
+      --csv <URI>
+            URI of CSV input
+      --parquet <URI>
+            URI of Parquet input
 
 # The core Spark queries
 
