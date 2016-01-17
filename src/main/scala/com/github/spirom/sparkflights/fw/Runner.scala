@@ -18,7 +18,7 @@ class Runner(experiments: Iterable[Experiment], sc: SparkContext,
 
   def makeIdFromDateTime(): String = {
     val now = Calendar.getInstance().getTime()
-    val idFormat = new SimpleDateFormat("YYYY_MM_dd_hhmmss")
+    val idFormat = new SimpleDateFormat("YYYY_MM_dd_HHmmss")
     val id = idFormat.format(now)
     id
   }
