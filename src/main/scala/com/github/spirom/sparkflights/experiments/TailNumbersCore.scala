@@ -20,7 +20,13 @@ class TailNumbersCore(sc: SparkContext)
     // count instances of each year
     val tailsWithCount = tails.groupBy(r => r).map(r => (r._1, r._2.size))
 
-    tailsWithCount.saveAsTextFile(s"$outputBase/tails_with_counts")
+    val sortedByCount =
+      tailsWithCount.sortBy( { case (_, count) => count }, ascending=false)
+
+    sortedByCount.saveAsTextFile(s"$outputBase/tails_with_counts")
+
+    val totalCount = tailsWithCount.count()
+    sc.parallelize(Seq(totalCount), 1).saveAsTextFile(s"$outputBase/tail_count")
 
   }
 
