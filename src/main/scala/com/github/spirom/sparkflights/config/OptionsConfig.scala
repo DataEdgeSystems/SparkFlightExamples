@@ -7,6 +7,7 @@ case class OptionsConfig
   sanity:URI = new URI("."),
   runAll: Boolean = false,
   local: Boolean = false,
+  list: Boolean = false,
   out:URI = new URI("."),
   parquet:URI = new URI("."),
   csv:URI = new URI("."),
@@ -22,6 +23,9 @@ case class OptionsConfig
     opt[Unit]("local") action { (_, c) =>
       c.copy(local = true) } text("Local, embedded Spark for testing")
 
+    opt[Unit]("list") action { (_, c) =>
+      c.copy(list = true) } text("List the available experiments")
+
     opt[URI]('o', "out") optional() valueName("<URI>") action { (x, c) =>
       c.copy(out = x) } text("required URI of output destination")
 
@@ -30,5 +34,8 @@ case class OptionsConfig
 
     opt[URI]("parquet") optional() valueName("<URI>") action { (x, c) =>
       c.copy(parquet = x) } text("URI of Parquet input")
+
+    opt[String]("run") optional() valueName("<experiment name>") action { (x, c) =>
+      c.copy(run = Seq(x)) } text("Name of experiment to run")
   }
 }

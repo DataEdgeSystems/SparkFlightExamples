@@ -40,6 +40,17 @@ The code uses that instance of the data.
 The data spans from 1987 to 2015. There are 162,212,419 rows.
 It appears to contain all the columns in the official data set.
 
+| Statistic | Value |
+| --------- | -----:|
+| Flights | 162,212,419 |
+| Aircraft Tail Numbers | |
+| Canceled Flights | |
+| Delayed Flights > 1 hour | |
+| Airports | 388 |
+| Airlines (Unique Carrier) | 31 |
+| Airport (Origin,Destination) pairs with flights | |
+
+
 # Building and running
 
 ## Building
@@ -52,7 +63,7 @@ This is for creating smaller Parquet extracts from the full data set.
 One application is to create a data set that is small enough to download
 to a PC or laptop.
 
-    java ParquetSubsetMain <sourceParquetUrl> <destinationParquetUrl>
+    java com.github.spirom.sparkflights.etl.ParquetSubsetMain <sourceParquetUrl> <destinationParquetUrl>
 
 ### ParquetBuilderMain
 
@@ -64,7 +75,7 @@ Transportation Statistics.
 
 ### FlightsMain
 
-    java FlightsMain [options]
+    java com.github.spirom.sparkflights.FlightsMain [options]
 
       --sanity <URI>
             Sanity check: just output an RDD to this URI and exit

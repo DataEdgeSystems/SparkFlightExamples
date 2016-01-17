@@ -97,7 +97,15 @@ class Flights(args: Array[String]) {
           registry.add(new MostPopularRoutesSQL(sqlContext))
 
           // TODO: the first elapsed time probably includes loading the data
-          val runner = new Runner(registry.getAll(), sc, rddLogger)
+
+          val experiments =
+            if (parsedOptions.run.size > 0) {
+              // TODO: deal with experiments not found
+              parsedOptions.run.flatMap(name => registry.lookup(name))
+            } else {
+              registry.getAll()
+            }
+          val runner = new Runner(experiments, sc, rddLogger)
           runner.run(data, outputLocation.toString)
 
           logger.info("SparkFlights: All queries done")
