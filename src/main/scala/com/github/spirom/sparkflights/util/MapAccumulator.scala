@@ -6,7 +6,7 @@ abstract class MapAccumulator[K, V]() extends Serializable{
 
   val entries = new mutable.HashMap[K, V]()
 
-  def mergeEntry(key: K, value: V): Unit = {
+  private def mergeEntry(key: K, value: V): Unit = {
     entries.get(key) match {
       case Some(oldValue) => {
         val newValue = mergeValues(value, oldValue)
