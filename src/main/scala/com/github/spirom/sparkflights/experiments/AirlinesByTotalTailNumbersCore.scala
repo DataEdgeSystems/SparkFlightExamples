@@ -27,8 +27,6 @@ class AirlinesByTotalTailNumbersCore(sc: SparkContext)
 
     top50.saveAsTextFile(s"$outputBase/carriers_by_tail_number_count")
 
-    val totalCount = sortedByAverage.count()
-
   }
 
 }
