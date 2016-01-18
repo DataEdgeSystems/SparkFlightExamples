@@ -100,10 +100,14 @@ Transportation Statistics.
 
 | Query | Purpose |
 | ----- | ------- |
-| [YearsCoveredCore](src/main/scala/com/github/spirom/sparkflights/experiments/YearsCoveredCore.scala) | Very simply, determine which years the data covers -- every year produced is guaranteed to have at least one flight record int he data |
+| [YearsCoveredCore](src/main/scala/com/github/spirom/sparkflights/experiments/YearsCoveredCore.scala) | Very simply, determine which years the data covers -- every year produced is guaranteed to have at least one flight record in the data |
 | [TopAirportsByAnnualDeparturesCore](src/main/scala/com/github/spirom/sparkflights/experiments/TopAirportsByAnnualDeparturesCore.scala) | Which airports have the most departures -- using the average yearly count.  |
 | [TopAirportsByLongDelaysCore](src/main/scala/com/github/spirom/sparkflights/experiments/TopAirportsByLongDelaysCore.scala) | Which airports have the highest absolute number of delays over an hour. |
 | [TopAirportsByLongDelaysPercentCore](src/main/scala/com/github/spirom/sparkflights/experiments/TopAirportsByLongDelaysPercentCore.scala) | Which airports have the highest percentage of flights delayed mroe than an hour -- this is the less naive version as it adjusts for how busy the airport is. |
+| [TailNumbersCore](src/main/scala/com/github/spirom/sparkflights/experiments/TailNumbersCore.scala) | Number of flights per tail number and count of tail numbers |
+| [AirlinesByTotalTailNumbersCore](src/main/scala/com/github/spirom/sparkflights/experiments/AirlinesByTotalTailNumbersCore.scala) | Total number of tail numbers for each airline |
+| [TopAirlinesByAnnualDeparturesCore](src/main/scala/com/github/spirom/sparkflights/experiments/TopAirlinesByAnnualDeparturesCore.scala) | Which airlines have the most departures |
+
 
 ## Programming Approach
 
