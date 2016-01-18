@@ -4,10 +4,9 @@ import com.github.spirom.sparkflights.config.OptionsConfig
 import com.github.spirom.sparkflights.experiments._
 import com.github.spirom.sparkflights.fw.{RDDLogger, Registry, Runner}
 import org.apache.log4j.{Level, Logger}
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{SaveMode, SQLContext, DataFrame}
+import org.apache.spark.sql.SQLContext
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.sql.types._
+
 
 class Flights(args: Array[String]) {
 
@@ -99,14 +98,29 @@ class Flights(args: Array[String]) {
 
           // TODO: the first elapsed time probably includes loading the data
 
-          val experiments =
-            if (parsedOptions.run.size > 0) {
-              // TODO: deal with experiments not found
-              parsedOptions.run.flatMap(name => registry.lookup(name))
+          val (experiments, unknownNames) =
+            if (parsedOptions.run.nonEmpty) {
+              val lookupResults =
+                parsedOptions.run.map(name => {
+                  val experiment = registry.lookup(name)
+                  experiment match {
+                    case None => Left(name)
+                    case Some(e) => Right(e)
+                  }
+                })
+              val unknownNames = lookupResults.map({
+                case Left(name) => Some(name)
+                case _ => None
+              }).flatMap(e => e)
+              val experiments = lookupResults.map({
+                case Right(e) => Some(e)
+                case _ => None
+              }).flatMap(e => e)
+              (experiments, unknownNames)
             } else {
-              registry.getAll()
+              (registry.getAll(), Seq())
             }
-          val runner = new Runner(experiments, sc, rddLogger)
+          val runner = new Runner(experiments, sc, rddLogger, unknownNames)
           runner.run(data, outputLocation.toString)
 
           logger.info("SparkFlights: All queries done")

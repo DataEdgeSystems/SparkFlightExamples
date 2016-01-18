@@ -8,7 +8,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.DataFrame
 
 class Runner(experiments: Iterable[Experiment], sc: SparkContext,
-              rddLogger: RDDLogger) {
+              rddLogger: RDDLogger, unknown: Seq[String] = Seq()) {
 
   val logger = Logger.getLogger(getClass.getName)
 
@@ -41,8 +41,10 @@ class Runner(experiments: Iterable[Experiment], sc: SparkContext,
   }
 
   def saveSummary(outputBase: String, sc: SparkContext) : Unit = {
-    val runOutputBase = outputBase + "/" + runId
+    val summaryBase = outputBase + "/" + runId + "/summary"
 
-    results.save(runOutputBase + "/summary", sc)
+    results.save(summaryBase, sc)
+
+    sc.parallelize(unknown, 1).saveAsTextFile(s"$summaryBase/unknown")
   }
 }

@@ -35,7 +35,7 @@ case class OptionsConfig
     opt[URI]("parquet") optional() valueName("<URI>") action { (x, c) =>
       c.copy(parquet = x) } text("URI of Parquet input")
 
-    opt[String]("run") optional() valueName("<experiment name>") action { (x, c) =>
-      c.copy(run = Seq(x)) } text("Name of experiment to run")
+    opt[Seq[String]]("run") optional() valueName("<name1>,<name2>,...") action { (x, c) =>
+      c.copy(run = x) } text("Name of experiment to run")
   }
 }

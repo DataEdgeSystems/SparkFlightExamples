@@ -32,7 +32,7 @@ class Results {
   }
 
   def save(runOutputBase: String, sc: SparkContext) : Unit = {
-    asLoggableRDD(sc).saveAsTextFile(runOutputBase + "/" + "summary")
+    asLoggableRDD(sc).saveAsTextFile(runOutputBase + "/" + "executions")
   }
 
 
