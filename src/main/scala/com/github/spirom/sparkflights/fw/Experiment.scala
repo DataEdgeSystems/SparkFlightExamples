@@ -29,7 +29,7 @@ abstract class Experiment(val name: String) {
       val result = new ExperimentResult(this, before, after, diff, None)
       results.add(result)
 
-      logger.info(s"Completed $name at ${timeFormat.format(after)} after $diff seconds")
+      logger.info(s"Completed $name at ${timeFormat.format(after)} after $diff msec")
     } catch {
       case (t: Throwable) => {
         val after = Calendar.getInstance().getTime()
@@ -39,7 +39,7 @@ abstract class Experiment(val name: String) {
         val result = new ExperimentResult(this, before, after, diff, Some(t))
         results.add(result)
 
-        logger.warn(s"Failed $name at ${timeFormat.format(after)} after $diff seconds", t)
+        logger.warn(s"Failed $name at ${timeFormat.format(after)} after $diff msec", t)
       }
     }
   }
