@@ -84,6 +84,7 @@ class Flights(args: Array[String]) {
           registry.add(new YearsCoveredSQL(sqlContext))
           registry.add(new YearsCoveredCore(sc))
           registry.add(new TailNumbersCore(sc))
+          registry.add(new TailNumbersSQL(sqlContext))
           registry.add(new TopAirportsByCancellationsSQL(sqlContext))
           registry.add(new TopAirportsByDeparturesSQL(sqlContext))
           registry.add(new TopAirportsByShortDelaysSQL(sqlContext))
