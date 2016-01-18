@@ -83,12 +83,16 @@ Transportation Statistics.
             Sanity check: just output an RDD to this URI and exit
       --local
             Local, embedded Spark for testing
+      --list
+            List the available experiments
       -o <URI> | --out <URI>
             required URI of output destination
       --csv <URI>
             URI of CSV input
       --parquet <URI>
             URI of Parquet input
+      --run <name1>,<name2>,...
+              Name of experiments to run (otherwise run all registered
 
 # The Core Spark Queries
 
