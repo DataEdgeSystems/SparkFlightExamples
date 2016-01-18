@@ -43,8 +43,9 @@ It appears to contain all the columns in the official data set.
 | Statistic | Value |
 | --------- | -----:|
 | Flights | 162,212,419 |
-| Aircraft Tail Numbers | |
-| Maximum number of flights for a single tail number | |
+| Aircraft Tail Numbers | 14,858 |
+| Records with missing or unknown tail numbers | 38,687,083 |
+| Maximum number of flights for a single tail number | 43,989 |
 | Canceled Flights | |
 | Delayed Flights > 1 hour | |
 | Airports | 388 |
