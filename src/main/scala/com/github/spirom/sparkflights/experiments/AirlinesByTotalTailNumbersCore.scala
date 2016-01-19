@@ -1,6 +1,6 @@
 package com.github.spirom.sparkflights.experiments
 
-import com.github.spirom.sparkflights.experiments.common.{ByTailNumberAdderCombiner, ByYearAdderCombiner}
+import com.github.spirom.sparkflights.experiments.common.ByTailNumberAdderCombiner
 import com.github.spirom.sparkflights.fw.CoreExperiment
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
@@ -14,10 +14,9 @@ class AirlinesByTotalTailNumbersCore(sc: SparkContext)
       df.select("uniquecarrier", "tailnum").map(r =>
       (r.getString(0), r.getString(1)))
 
-    val byCarrierKey =
-      departures.aggregateByKey(ByTailNumberAdderCombiner.initial)(
-        ByTailNumberAdderCombiner.add,
-        ByTailNumberAdderCombiner.combine)
+    val comb = new ByTailNumberAdderCombiner[String]()
+    val byCarrierKey = comb.aggregateByKey(departures)
+
     val carriersWithAverage = byCarrierKey.map(
       { case (carrier, acc) => (carrier, acc.count()) }
     )

@@ -1,8 +1,9 @@
 package com.github.spirom.sparkflights.util
 
 import scala.collection.mutable
+import scala.reflect.ClassTag
 
-abstract class MapAccumulator[K, V]() extends Serializable{
+abstract class MapAccumulator[K: ClassTag, V: ClassTag] extends Accumulator[K] {
 
   val entries = new mutable.HashMap[K, V]()
 
@@ -18,10 +19,16 @@ abstract class MapAccumulator[K, V]() extends Serializable{
 
   def mergeValues(e1: V, e2: V) : V
 
-  def merge(other: MapAccumulator[K, V]): Unit = {
-    for ((k, v) <- other.entries.iterator) {
-      mergeEntry(k, v)
+  override def merge(other: Accumulator[K]): Unit = {
+    other match {
+      case kvOther: MapAccumulator[K,V] => {
+        for ((k, v) <- kvOther.entries.iterator) {
+          mergeEntry(k, v)
+        }
+      }
+      case _ => throw new ClassCastException
     }
+
   }
 
 
