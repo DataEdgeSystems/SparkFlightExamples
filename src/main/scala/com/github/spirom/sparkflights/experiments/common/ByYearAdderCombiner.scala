@@ -6,7 +6,7 @@ object ByYearAdderCombiner {
 
   class ByYearAccumulator() extends MapAccumulator[Int, Int] {
 
-    def increment(year: Int): Unit = {
+    def include(year: Int): Unit = {
       add(year, 1)
     }
 
@@ -31,7 +31,7 @@ object ByYearAdderCombiner {
   def initial: ByYearAccumulator = new ByYearAccumulator()
 
   def add(acc: ByYearAccumulator, year: Int): ByYearAccumulator = {
-    acc.increment(year)
+    acc.include(year)
     acc
   }
 

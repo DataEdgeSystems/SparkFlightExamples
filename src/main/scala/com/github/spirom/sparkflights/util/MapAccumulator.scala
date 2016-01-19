@@ -3,6 +3,9 @@ package com.github.spirom.sparkflights.util
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
+//
+// An accumulator that uses the datum as a kay into a map
+//
 abstract class MapAccumulator[K: ClassTag, V: ClassTag] extends Accumulator[K] {
 
   val entries = new mutable.HashMap[K, V]()

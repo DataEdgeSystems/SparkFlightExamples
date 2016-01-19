@@ -10,11 +10,11 @@ import scala.reflect.ClassTag
 //
 class ByTailNumberAccumulator() extends MapAccumulator[String, Int] {
 
-  def increment(tailNum: String): Unit = {
+  override def include(tailNum: String): Unit = {
     add(tailNum, 1)
   }
 
-  def add(tailNum: String, count: Int): Unit = {
+  private def add(tailNum: String, count: Int): Unit = {
     entries.get(tailNum) match {
       case Some(oldCount) => entries.+=((tailNum, oldCount + count))
       case None => entries.+=((tailNum, count))

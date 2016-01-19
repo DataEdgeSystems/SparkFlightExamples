@@ -2,10 +2,18 @@ package com.github.spirom.sparkflights.util
 
 import scala.reflect.ClassTag
 
-
-abstract class Accumulator[V: ClassTag] extends Serializable
+//
+// The most general form of accumulator for aggregation.
+//
+abstract class Accumulator[D: ClassTag] extends Serializable
 {
-  def increment(value: V): Unit
+  //
+  // Include the given datum
+  //
+  def include(value: D): Unit
 
-  def merge(other: Accumulator[V]): Unit
+  //
+  // merge another accumulator into this one
+  //
+  def merge(other: Accumulator[D]): Unit
 }
