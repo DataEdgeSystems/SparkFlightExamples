@@ -14,10 +14,10 @@ class TopAirportsByAnnualDeparturesCore(sc: SparkContext)
       df.select("origin", "year").map(r =>
       (r.getString(0), r.getInt(1)))
 
+    val comb = new ByYearAdderCombiner[String]
     val byOriginKey =
-      departures.aggregateByKey(ByYearAdderCombiner.initial)(
-        ByYearAdderCombiner.add,
-        ByYearAdderCombiner.combine)
+      comb.aggregateByKey(departures)
+
     val originsWithAverage = byOriginKey.map(
       { case (year, acc) => (year, acc.average()) }
     )

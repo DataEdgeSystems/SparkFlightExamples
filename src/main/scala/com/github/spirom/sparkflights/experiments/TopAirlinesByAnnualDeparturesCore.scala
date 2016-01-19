@@ -14,10 +14,9 @@ class TopAirlinesByAnnualDeparturesCore(sc: SparkContext)
       df.select("uniquecarrier", "year").map(r =>
       (r.getString(0), r.getInt(1)))
 
+    val comb = new ByYearAdderCombiner[String]
     val byCarrierKey =
-      departures.aggregateByKey(ByYearAdderCombiner.initial)(
-        ByYearAdderCombiner.add,
-        ByYearAdderCombiner.combine)
+      comb.aggregateByKey(departures)
     val carriersWithAverage = byCarrierKey.map(
       { case (year, acc) => (year, acc.average()) }
     )
