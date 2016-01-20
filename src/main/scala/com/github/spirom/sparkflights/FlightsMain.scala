@@ -82,6 +82,7 @@ class Flights(args: Array[String]) {
           // TODO: currently runs in random order
           registry.add(new YearsCoveredSQL(sqlContext))
           registry.add(new YearsCoveredCore(sc))
+          registry.add(new AirportPairsCore(sc))
           registry.add(new TailNumbersCore(sc))
           registry.add(new TailNumbersSQL(sqlContext))
           registry.add(new TopAirportsByCancellationsSQL(sqlContext))
