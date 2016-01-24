@@ -12,22 +12,23 @@ import scala.reflect.ClassTag
 //
 // The Accumulator implementation is provided when extending this class.
 //
-abstract class PairAggregateCombiner[K:ClassTag, V: ClassTag, A <: Accumulator[V] : ClassTag]
+abstract class PairAggregateCombiner[K:ClassTag, V: ClassTag,
+    A <: Accumulator[V, A] : ClassTag]
   extends Serializable
 {
+
+
 
   def initial: A
 
   private def seq(acc: A, value: V): A = {
-    acc.include(value)
-    acc
+    val nacc : A = acc.include(value)
+    nacc
   }
 
   private def comb(acc1: A, acc2: A): A = {
-    val acc = initial
-    acc.merge(acc1)
-    acc.merge(acc2)
-    acc
+    val nacc : A = initial.merge(acc1).merge(acc2)
+    nacc
   }
 
   def aggregateByKey(pairs: RDD[(K, V)]): RDD[(K, A)] =

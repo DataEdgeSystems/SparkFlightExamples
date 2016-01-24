@@ -6,7 +6,10 @@ import scala.reflect.ClassTag
 //
 // An accumulator that uses the datum as a kay into a map
 //
-abstract class MapAccumulator[K: ClassTag, V: ClassTag] extends Accumulator[K] {
+abstract class MapAccumulator[K: ClassTag, V: ClassTag,
+  MA <: MapAccumulator[K, V, _]]
+  extends Accumulator[K, MA]
+{
 
   val entries = new mutable.HashMap[K, V]()
 
@@ -22,17 +25,11 @@ abstract class MapAccumulator[K: ClassTag, V: ClassTag] extends Accumulator[K] {
 
   def mergeValues(e1: V, e2: V) : V
 
-  override def merge(other: Accumulator[K]): Unit = {
-    other match {
-      case kvOther: MapAccumulator[K,V] => {
-        for ((k, v) <- kvOther.entries.iterator) {
-          mergeEntry(k, v)
-        }
-      }
-      case _ => throw new ClassCastException
+  override def merge(other: MA): MA = {
+    for ((k, v) <- other.entries.iterator) {
+      mergeEntry(k, v)
     }
-
+    this.asInstanceOf[MA]
   }
-
 
 }

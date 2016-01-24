@@ -8,10 +8,11 @@ import scala.reflect.ClassTag
 //
 // Accumulate a map of tail numbers with counts for use in aggregation
 //
-class ByTailNumberAccumulator() extends MapAccumulator[String, Int] {
+class ByTailNumberAccumulator() extends MapAccumulator[String, Int, ByTailNumberAccumulator] {
 
-  override def include(tailNum: String): Unit = {
+  override def include(tailNum: String): ByTailNumberAccumulator = {
     add(tailNum, 1)
+    this
   }
 
   private def add(tailNum: String, count: Int): Unit = {

@@ -3,10 +3,11 @@ import com.github.spirom.sparkflights.util.{PairAggregateCombiner, MapAccumulato
 
 import scala.reflect.ClassTag
 
-class ByYearAccumulator() extends MapAccumulator[Int, Int] {
+class ByYearAccumulator() extends MapAccumulator[Int, Int, ByYearAccumulator] {
 
-  def include(year: Int): Unit = {
+  override def include(year: Int): ByYearAccumulator = {
     add(year, 1)
+    this
   }
 
   def add(year: Int, count: Int): Unit = {
