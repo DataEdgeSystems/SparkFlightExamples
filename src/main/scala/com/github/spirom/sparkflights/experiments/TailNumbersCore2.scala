@@ -5,8 +5,8 @@ import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 
-class TailNumbersCore(sc: SparkContext)
-  extends CoreExperiment("TailNumbersCore", sc) {
+class TailNumbersCore2(sc: SparkContext)
+  extends CoreExperiment("TailNumbersCore2", sc) {
 
   //
   // What aircraft tail numbers are covered in the data and
@@ -15,11 +15,14 @@ class TailNumbersCore(sc: SparkContext)
 
   def runUserCode(sc: SparkContext, df: DataFrame, outputBase: String): Unit = {
     // don't need anything more than the years
-    val tails: RDD[String] = df.select("tailnum").map(r =>
-      r.getString(0))
+    val tails: RDD[(String, String)] =
+      df.select("tailnum", "origin").map(r => (r.getString(0), r.getString(1)))
     // count instances of each year
     val tailsWithCount =
-      tails.groupBy((r:String) => r).map(r => (r._1, r._2.size))
+      tails.aggregateByKey(0)(
+        (acc: Int, origin: String) => acc + 1,
+        (acc1: Int, acc2: Int) => acc1 + acc2
+      )
 
     val sortedByCount =
       tailsWithCount.sortBy( { case (_, count) => count }, ascending=false)

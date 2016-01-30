@@ -79,11 +79,13 @@ class Flights(args: Array[String]) {
 
           val registry = new Registry()
 
-          // TODO: currently runs in random order
+          // TODO: currently runs in random order unless an actual
+          // TODO: sequence is specified ont he command line
           registry.add(new YearsCoveredSQL(sqlContext))
           registry.add(new YearsCoveredCore(sc))
           registry.add(new AirportPairsCore(sc))
           registry.add(new TailNumbersCore(sc))
+          registry.add(new TailNumbersCore2(sc))
           registry.add(new TailNumbersSQL(sqlContext))
           registry.add(new TopAirportsByCancellationsSQL(sqlContext))
           registry.add(new TopAirportsByDeparturesSQL(sqlContext))
@@ -96,8 +98,6 @@ class Flights(args: Array[String]) {
           registry.add(new AirlinesByTotalTailNumbersCore(sc))
           registry.add(new TopQuartersByCancellationsSQL(sqlContext))
           registry.add(new MostPopularRoutesSQL(sqlContext))
-
-          // TODO: the first elapsed time probably includes loading the data
 
           val (experiments, unknownNames) =
             if (parsedOptions.run.nonEmpty) {
