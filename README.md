@@ -50,8 +50,8 @@ It appears to contain all the columns in the official data set.
 | Delayed Flights > 1 hour | |
 | Airports | 388 |
 | Airlines (Unique Carrier) | 31 |
-| Airport (Origin,Destination) pairs with flights | |
-| Airport pair with the most flights | |
+| Airport (Origin,Destination) pairs with flights | 9554 |
+| Airport pair with the most flights | SFO to LAX (426,506) |
 
 
 # Building and running
