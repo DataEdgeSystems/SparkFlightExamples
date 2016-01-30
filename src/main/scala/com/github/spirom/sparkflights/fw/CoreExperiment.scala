@@ -8,8 +8,9 @@ abstract class CoreExperiment(name: String, sc: SparkContext) extends Experiment
   // context may have been modified from the one in the constructor
   def runUserCode(sc: SparkContext, df: DataFrame, outputBase: String): Unit
 
-  def runQuery(df: DataFrame, runOutputBase: String): Unit = {
-    runUserCode(sc, df, runOutputBase + "/" + name)
+  def runQuery(df: DataFrame, runOutputBase: String, index: Int): Unit = {
+    val prefix = String.format("%05d", int2Integer(index))
+    runUserCode(sc, df, runOutputBase + "/" + prefix + "_" + name)
   }
 
 }

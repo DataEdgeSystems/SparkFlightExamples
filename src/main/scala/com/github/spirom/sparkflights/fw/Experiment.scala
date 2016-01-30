@@ -10,9 +10,9 @@ abstract class Experiment(val name: String) {
 
   val logger = Logger.getLogger(getClass.getName)
 
-  def runQuery(df: DataFrame, runOutputBase: String): Unit
+  def runQuery(df: DataFrame, runOutputBase: String, index: Int): Unit
 
-  def run(df: DataFrame, runOutputBase: String, results: Results): Unit = {
+  def run(df: DataFrame, runOutputBase: String, index: Int, results: Results): Unit = {
 
     val timeFormat = new SimpleDateFormat("hh:mm:ss")
 
@@ -20,7 +20,7 @@ abstract class Experiment(val name: String) {
     logger.info(s"Running $name at ${timeFormat.format(before)}")
 
     try {
-      runQuery(df, runOutputBase)
+      runQuery(df, runOutputBase, index)
 
       val after = Calendar.getInstance().getTime()
 

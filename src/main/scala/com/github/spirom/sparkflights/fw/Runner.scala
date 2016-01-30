@@ -31,9 +31,11 @@ class Runner(experiments: Iterable[Experiment], sc: SparkContext,
 
     logger.info(s"Saving results under $runOutputBase")
 
+    var index = 1
     experiments.foreach(e => {
       rddLogger.log("before " + e.name)
-      e.run(df, runOutputBase, results)
+      e.run(df, runOutputBase, index, results)
+      index = index + 1
     })
 
     logger.info(s"Completed all experiments for run $runId")

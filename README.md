@@ -95,6 +95,56 @@ Transportation Statistics.
       --run <name1>,<name2>,...
               Name of experiments to run (otherwise run all registered
 
+# Finding the Output
+
+As the framework executes experiments, it produces a directory tree with
+summary results as well as the actual output of the various Spark computations.
+The tree looks like this:
+
+    <specified output directory>
+    |
+    |-- <date and time at job start>
+        |
+        |-- summary
+        |   |
+        |   |-- executions
+        |   |
+        |   |-- unknown
+        |
+        |-- 00001_<Experiment Name 1>
+        |   |
+        |   |-- <Result 1>
+        |   |
+        |   |-- ...
+        |   |
+        |   |-- <Result n_1>
+        |
+        |-- ...
+        |
+        |-- 0000k_<Experiment Name k>
+            |
+            |-- <Result 1>
+            |
+            |-- ...
+            |
+            |-- <Result n_k>
+
+Each of the leaf nodes int he tree are HDFS "files",
+with their various underlying "part", "SUCCESS" and ".crc" files.
+
+The "executions" node contains a summary of what ran when, how
+long it took, and whether it succeeded. Stack traces are included
+in case of a failure.
+
+The "unknown" node lists experiments explicitly specified ont he command line that
+could not be found int he registry.
+
+The experiment nodes are numbered to show the sequence in which they ran and to
+accommodate the same experiment being run more than once.
+
+The number of result nodes under an experiment varies,
+and is determined by the implementation of each individual experiment.
+
 # The Core Spark Queries
 
 ## Annotated List of Queries
