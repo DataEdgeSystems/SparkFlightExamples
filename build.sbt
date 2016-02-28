@@ -10,6 +10,8 @@ scalacOptions in ThisBuild ++= Seq("-deprecation")
 
 libraryDependencies += "org.apache.spark" %% "spark-core" % "1.5.2" % "provided"
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.5.2" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-hive" % "1.5.2" % "provided"
+
 
 libraryDependencies += "com.github.scopt" %% "scopt" % "3.3.0"
 
